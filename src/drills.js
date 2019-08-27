@@ -9,6 +9,13 @@ const knexInstance = knex({
 
 console.log('connection successful!');
 
-knexInstance.from('shopping_list')
-  .select('*')
-  .then(res => console.log(res));
+
+function searchByText (searchTerm) {
+  knexInstance.from('shopping_list')
+    .select('*')
+    .where('name', 'ILIKE', `%${searchTerm}%`)
+    .then(res => console.log(res))
+    .catch(err => console.log(err.message));
+}
+
+searchByText('burger');
