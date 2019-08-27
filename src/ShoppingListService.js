@@ -8,7 +8,11 @@ const ShoppingListService = {
       
   },
 
-  insertNewItem (db) {},
+  insertNewItem (db, newItem) {
+    return db.into('shopping_list')
+      .insert(newItem)
+      .returning('*');
+  },
 
   updateItem (db) {},
 
