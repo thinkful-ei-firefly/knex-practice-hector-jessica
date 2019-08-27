@@ -6,9 +6,7 @@ const ShoppingListService = require('../src/ShoppingListService');
 const knex = require('knex');
 
 describe ('Shopping List DB Services Object', () => {
-  let db;
-
-  const newItem = {name: 'potatoes', price: 3.70, category: 'Main'};
+  let db;  
 
   before(() =>{
     db = knex({
@@ -40,6 +38,7 @@ describe ('Shopping List DB Services Object', () => {
   describe('insertNewItem', () => {
 
     it('inserts the given item with appropriate keys into the database', () => {
+      const newItem = {name: 'potatoes', price: 3.70, category: 'Main'};
       return ShoppingListService.insertNewItem(db, newItem)
         .then( res => {
           expect(res[0]).to.have.all.keys('id', 'name', 'price', 'date_added', 'checked', 'category');
@@ -48,11 +47,41 @@ describe ('Shopping List DB Services Object', () => {
           expect(res[0].category).to.equal(newItem.category);
         });          
     });
-    
+
   }); 
 
-  describe('updateItem', () => {}); 
+  describe('updateItem', () => {
 
-  describe('deleteItem', () => {}); 
+    it('updates the given item to have the designated fields', () => {
+      const updatedFields = {price: 999};
+      const id = 12;
+      return ShoppingListService.updateItem(db, id, updatedFields)
+        .then(res => {
+          expect(parseFloat(res[0].price)).to.equal(updatedFields.price);
+        });
+    });
 
+  }); 
+
+  describe('deleteItem', () => {
+
+    it('deletes stuff when I write the correct syntax instead of forgetting it() statements in a test suite', () => {
+      const id = 3;
+      let expected;
+      ShoppingListService.getAllItems(db)
+        .then(res => {
+          expected = res.filter(item => item.id !==id);
+        });        
+      return ShoppingListService.deleteItem(db, id)
+        .then(() => ShoppingListService.getAllItems(db))
+        .then(allItems => {
+          expect(allItems).to.deep.equal(expected);
+        });
+    });
+      
+   
+    
+
+  }); 
+  
 });
