@@ -11,31 +11,46 @@ console.log('connection successful!');
 
 
 function searchByText (searchTerm) {
-  knexInstance.from('shopping_list')
+  return knexInstance.from('shopping_list')
     .select('*')
     .where('name', 'ILIKE', `%${searchTerm}%`)
     .then(res => console.log(res))
-    .catch(err => console.log(err.message));
+    .catch(err => console.log(err.message))
+    .finally(() => knexInstance.destroy());
 }
 
 function paginateItems (pageNumber) {
   const itemsPerPage = 6;
   const offset = itemsPerPage * (pageNumber - 1);
-  knexInstance.from('shopping_list')
+  return knexInstance.from('shopping_list')
     .select('*')
     .limit(itemsPerPage)
     .offset(offset)
     .then(results => console.log(results))
-    .catch(err => console.log(err.message));
+    .catch(err => console.log(err.message))
+    .finally(() => knexInstance.destroy());
 }
 
 function searchByAge (daysAgo) {
-  knexInstance.from('shopping_list')
+  return knexInstance.from('shopping_list')
     .select('*')
     // eslint-disable-next-line quotes
     .where('date_added', '>', knexInstance.raw(`now() - '?? days'::INTERVAL`, daysAgo))
     .then (res => console.log(res))
-    .catch(err => console.log(err.message));
+    .catch(err => console.log(err.message))
+    .finally(() => knexInstance.destroy());
 }
 
-searchByAge(3);
+function totalCostByCategory () {
+  return knexInstance.from('shopping_list')
+    .select('category')
+    .groupBy('category')
+    .sum('price as total')
+    .then(res => console.log(res))
+    .finally(() => knexInstance.destroy());
+}
+
+//searchByText('bacon');
+//paginateItems(2);
+//searchByAge(3);
+totalCostByCategory();
